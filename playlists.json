@@ -1,0 +1,98 @@
+[
+  {
+    "id": "2026-04",
+    "month": "APR",
+    "year": "2026",
+    "title": "2604",
+    "appleUrl": "https://music.apple.com/se/playlist/2604/pl.u-aZb0aLvCVzMMMm?l=en",
+    "spotifyUrl": "",
+    "cover": "covers/2026-04.png",
+    "tracks": [
+      { "n": 1, "title": "Weekend", "artist": "Smith Westerns" },
+      { "n": 2, "title": "Paper Cup (feat. Sylvan Esso)", "artist": "Real Estate" },
+      { "n": 3, "title": "Feel so Good", "artist": "Spacemen 3" },
+      { "n": 4, "title": "Green Eyes", "artist": "Wavves" },
+      { "n": 5, "title": "Good Luck (feat. Lisa Kekaula)", "artist": "Basement Jaxx" },
+      { "n": 6, "title": "Elephant Woman", "artist": "Blonde Redhead" },
+      { "n": 7, "title": "AP7", "artist": "Svsto" },
+      { "n": 8, "title": "i know computer", "artist": "Mclusky" }
+    ]
+  },
+  {
+    "id": "2026-03",
+    "month": "MAR",
+    "year": "2026",
+    "title": "2603",
+    "appleUrl": "https://music.apple.com/se/playlist/2603/pl.u-JPAZzymtWJZZZB?l=en",
+    "spotifyUrl": "",
+    "cover": "covers/2026-03.png",
+    "tracks": [
+      { "n": 1, "title": "What You Want", "artist": "Angèle & Justice" },
+      { "n": 2, "title": "Solid", "artist": "Cut Copy" },
+      { "n": 3, "title": "Army of Me", "artist": "Björk" },
+      { "n": 4, "title": "Sugar Clouds", "artist": "Ásgeir" },
+      { "n": 5, "title": "Making a Fool", "artist": "Shy Shy Shy" },
+      { "n": 6, "title": "Genius of Love", "artist": "Tom Tom Club" },
+      { "n": 7, "title": "Planet Claire", "artist": "The B-52's" },
+      { "n": 8, "title": "Velvet Blues (Nova Edit)", "artist": "Avril" },
+      { "n": 9, "title": "House In LA", "artist": "Jungle" },
+      { "n": 10, "title": "My Type", "artist": "Saint Motel" }
+    ]
+  },
+  {
+    "id": "2026-02",
+    "month": "FEB",
+    "year": "2026",
+    "title": "2602",
+    "appleUrl": "https://music.apple.com/se/playlist/2602/pl.u-V9D73y7H1Ppppa?l=en",
+    "spotifyUrl": "",
+    "cover": "covers/2026-02.png",
+    "tracks": [
+      { "n": 1, "title": "At The Door", "artist": "The Strokes" },
+      { "n": 2, "title": "Change (2005 Digital Remaster)", "artist": "Killing Joke" },
+      { "n": 3, "title": "Fantastic Tomb", "artist": "Ty Segall" },
+      { "n": 4, "title": "Love Vigilantes", "artist": "New Order" },
+      { "n": 5, "title": "Pure Emotions", "artist": "Spleen United" },
+      { "n": 6, "title": "Musik Non Stop", "artist": "Kent" },
+      { "n": 7, "title": "Opening Night", "artist": "Arctic Monkeys & War Child Records" },
+      { "n": 8, "title": "Washing Machine", "artist": "Bibi Club" },
+      { "n": 9, "title": "The Air's on Fire", "artist": "Failure" },
+      { "n": 10, "title": "SWEAT", "artist": "The Sophs" },
+      { "n": 11, "title": "The Headache", "artist": "Autopilot" },
+      { "n": 12, "title": "Starburster", "artist": "Fontaines D.C." },
+      { "n": 13, "title": "Orange County (feat. Bizarrap, Kara Jackson & Anoushka Shankar)", "artist": "Gorillaz" },
+      { "n": 14, "title": "La Perla", "artist": "ROSALÍA & Yahritza Y Su Esencia" },
+      { "n": 15, "title": "I Like It Like That", "artist": "Fcukers" },
+      { "n": 16, "title": "Drive", "artist": "The Cars" },
+      { "n": 17, "title": "Pure", "artist": "The Lightning Seeds" },
+      { "n": 18, "title": "Death of Love", "artist": "James Blake" }
+    ]
+  },
+  {
+    "id": "2026-01",
+    "month": "JAN",
+    "year": "2026",
+    "title": "2601",
+    "appleUrl": "https://music.apple.com/se/playlist/2601/pl.u-mJy82YBsBl555a?l=en",
+    "spotifyUrl": "",
+    "cover": "covers/2026-01.png",
+    "tracks": [
+      { "n": 1, "title": "Stay Tonight", "artist": "Swan Lee" },
+      { "n": 2, "title": "All Night (Unfinished)", "artist": "Jai Paul" },
+      { "n": 3, "title": "Canario", "artist": "Karen y Los Remedios" },
+      { "n": 4, "title": "Irresponsables", "artist": "Babasónicos" },
+      { "n": 5, "title": "As It Was", "artist": "Matty Greg" },
+      { "n": 6, "title": "Humankind", "artist": "Alice Russell" },
+      { "n": 7, "title": "Gallowdance", "artist": "Lebanon Hanover" },
+      { "n": 8, "title": "I Don't Wanna Talk (I Just Wanna Dance)", "artist": "Glass Animals" },
+      { "n": 9, "title": "Baby Wonder's Gone", "artist": "Drop Nineteens" },
+      { "n": 10, "title": "Sweetness and Light", "artist": "Lush" },
+      { "n": 11, "title": "Crazy", "artist": "Seal" },
+      { "n": 12, "title": "Not There", "artist": "KUČKA" },
+      { "n": 13, "title": "I'll Call U Back", "artist": "Erykah Badu" },
+      { "n": 14, "title": "All Night", "artist": "Ten Fé" },
+      { "n": 15, "title": "Cry & Smile", "artist": "Guts" },
+      { "n": 16, "title": "Far Away from Reason", "artist": "NAYAD" }
+    ]
+  }
+]

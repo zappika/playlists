@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>playlists</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f5f5f0;
+      --fg: #0a0a0a;
+      --fg-dim: rgba(10,10,10,0.35);
+      --fg-mid: rgba(10,10,10,0.6);
+      --border: rgba(10,10,10,0.1);
+      --mono: 'IBM Plex Mono', monospace;
+      --display: 'Syne', sans-serif;
+    }
+
+    html { background: var(--bg); color: var(--fg); }
+
+    body {
+      font-family: var(--mono);
+      background: var(--bg);
+      color: var(--fg);
+      min-height: 100vh;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── HEADER ── */
+    header {
+      padding: 3rem 3rem 2.5rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 2rem;
+    }
+
+    .site-title {
+      font-family: var(--display);
+      font-size: clamp(1.6rem, 4vw, 2.4rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1;
+    }
+
+    .site-meta {
+      font-size: 0.65rem;
+      color: var(--fg-dim);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      text-align: right;
+      line-height: 1.8;
+    }
+
+    /* ── GRID ── */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      border-left: 1px solid var(--border);
+    }
+
+    @media (max-width: 600px) {
+      header { padding: 2rem 1.5rem; flex-direction: column; gap: 1rem; }
+      .site-meta { text-align: left; }
+      .grid { grid-template-columns: 1fr; border-left: none; }
+    }
+
+    /* ── PLAYLIST CARD ── */
+    .playlist {
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      transition: background 0.15s ease;
+      --card-bg: var(--bg);
+      --card-fg: var(--fg);
+      background: var(--card-bg);
+      color: var(--card-fg);
+    }
+
+    .playlist:hover .cover-wrap { opacity: 0.88; }
+
+    .card-top {
+      padding: 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cover-wrap {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      background: #e8e8e3;
+      overflow: hidden;
+      transition: opacity 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .cover-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .cover-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--display);
+      font-size: clamp(3rem, 10vw, 6rem);
+      font-weight: 800;
+      color: rgba(10,10,10,0.06);
+      letter-spacing: -0.04em;
+      user-select: none;
+    }
+
+    .card-bottom {
+      padding: 1.25rem 1.5rem 1rem;
+      border-top: 1px solid rgba(10,10,10,0.07);
+    }
+
+    .card-date {
+      font-size: 0.6rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      opacity: 0.45;
+      margin-bottom: 0.3rem;
+    }
+
+    .card-title {
+      font-family: var(--display);
+      font-size: clamp(1.4rem, 3.5vw, 2rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1;
+      margin-bottom: 1rem;
+    }
+
+    .card-links {
+      display: flex;
+      gap: 1.5rem;
+      align-items: center;
+    }
+
+    .card-link {
+      font-size: 0.6rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      text-decoration: none;
+      color: inherit;
+      opacity: 0.5;
+      transition: opacity 0.15s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.3em;
+    }
+
+    .card-link:hover { opacity: 1; }
+    .card-link .arrow { font-size: 0.75rem; }
+
+    .card-expand-hint {
+      font-size: 0.55rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      opacity: 0.25;
+      margin-left: auto;
+      transition: opacity 0.15s;
+    }
+
+    .playlist:hover .card-expand-hint { opacity: 0.5; }
+    .playlist.open .card-expand-hint { opacity: 0.7; }
+
+    /* ── TRACKLIST ── */
+    .tracklist {
+      display: none;
+      padding: 0 1.5rem 1.5rem;
+      border-top: 1px solid rgba(10,10,10,0.06);
+      margin-top: 0.25rem;
+    }
+
+    .playlist.open .tracklist { display: block; }
+
+    .tracklist-inner {
+      padding-top: 1rem;
+    }
+
+    .track {
+      display: grid;
+      grid-template-columns: 2rem 1fr auto;
+      gap: 0 0.75rem;
+      align-items: baseline;
+      padding: 0.45rem 0;
+      border-bottom: 1px solid rgba(10,10,10,0.05);
+      font-size: 0.7rem;
+    }
+
+    .track:last-child { border-bottom: none; }
+
+    .track-n {
+      opacity: 0.25;
+      font-size: 0.6rem;
+      text-align: right;
+      letter-spacing: 0.05em;
+    }
+
+    .track-title {
+      font-weight: 500;
+      letter-spacing: 0.01em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .track-artist {
+      opacity: 0.45;
+      font-size: 0.62rem;
+      letter-spacing: 0.03em;
+      white-space: nowrap;
+      font-style: italic;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 1.5rem 3rem;
+      font-size: 0.6rem;
+      letter-spacing: 0.1em;
+      color: var(--fg-dim);
+      text-transform: uppercase;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    @media (max-width: 600px) {
+      footer { padding: 1.5rem; flex-direction: column; gap: 0.5rem; align-items: flex-start; }
+      .card-bottom { padding: 1rem; }
+      .tracklist { padding: 0 1rem 1rem; }
+    }
+
+    /* ── LOAD ANIMATION ── */
+    .playlist {
+      animation: fadeUp 0.4s ease both;
+    }
+    .playlist:nth-child(1) { animation-delay: 0.04s; }
+    .playlist:nth-child(2) { animation-delay: 0.08s; }
+    .playlist:nth-child(3) { animation-delay: 0.12s; }
+    .playlist:nth-child(4) { animation-delay: 0.16s; }
+    .playlist:nth-child(5) { animation-delay: 0.2s; }
+    .playlist:nth-child(6) { animation-delay: 0.24s; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="site-title">playlists.</div>
+  <div class="site-meta">
+    monthly selections<br/>
+    apple music &amp; spotify
+  </div>
+</header>
+
+<main class="grid" id="grid"></main>
+
+<footer>
+  <span id="footer-count">— playlists</span>
+  <span>updated monthly</span>
+</footer>
+
+<script>
+  function rootAsset(path) {
+    if (!path) return '';
+    if (/^https?:\/\//i.test(path)) return path;
+    return path.replace(/^\//, '');
+  }
+
+  async function init() {
+    const res = await fetch('./playlists.json');
+    const playlists = await res.json();
+
+    document.getElementById('footer-count').textContent = playlists.length + ' playlists';
+
+    const grid = document.getElementById('grid');
+
+    playlists.forEach(p => {
+      const hasCover = p.cover;
+      const hasColor = p.bg && p.fg;
+      const coverSrc = rootAsset(p.cover);
+
+      const el = document.createElement('article');
+      el.className = 'playlist';
+      el.dataset.id = p.id;
+
+      if (hasColor) {
+        el.style.setProperty('--card-bg', p.bg);
+        el.style.setProperty('--card-fg', p.fg);
+        el.style.background = p.bg;
+        el.style.color = p.fg;
+      }
+
+      const trackRows = p.tracks.map(t => `
+        <div class="track">
+          <span class="track-n">${String(t.n).padStart(2, '0')}</span>
+          <span class="track-title">${t.title}</span>
+          <span class="track-artist">${t.artist}</span>
+        </div>
+      `).join('');
+
+      const borderColor = hasColor
+        ? `rgba(${hexToRgb(p.fg)}, 0.12)`
+        : 'rgba(240,240,240,0.06)';
+
+      el.innerHTML = `
+        <div class="card-top">
+          <div class="cover-wrap">
+            ${hasCover
+              ? `<img src="${coverSrc}" alt="${p.title}" onerror="this.parentElement.innerHTML='<div class=\'cover-placeholder\'>${p.month}</div>'" />`
+              : `<div class="cover-placeholder">${p.month}</div>`
+            }
+          </div>
+        </div>
+        <div class="card-bottom">
+          <div class="card-date">${p.month} ${p.year}</div>
+          <div class="card-title">${p.title}</div>
+          <div class="card-links">
+            <a class="card-link" href="${p.appleUrl}" target="_blank" rel="noopener" onclick="event.stopPropagation()">
+              Apple Music <span class="arrow">↗</span>
+            </a>
+            <a class="card-link" href="${p.spotifyUrl}" target="_blank" rel="noopener" onclick="event.stopPropagation()">
+              Spotify <span class="arrow">↗</span>
+            </a>
+            <span class="card-expand-hint">tracklist ↓</span>
+          </div>
+        </div>
+        <div class="tracklist" style="border-top-color: ${borderColor}">
+          <div class="tracklist-inner">
+            ${trackRows}
+          </div>
+        </div>
+      `;
+
+      el.addEventListener('click', () => {
+        const isOpen = el.classList.contains('open');
+        // close all others
+        document.querySelectorAll('.playlist.open').forEach(x => x.classList.remove('open'));
+        if (!isOpen) el.classList.add('open');
+      });
+
+      grid.appendChild(el);
+    });
+  }
+
+  function hexToRgb(hex) {
+    const r = parseInt(hex.slice(1,3),16);
+    const g = parseInt(hex.slice(3,5),16);
+    const b = parseInt(hex.slice(5,7),16);
+    return `${r},${g},${b}`;
+  }
+
+  init();
+</script>
+</body>
+</html>
