@@ -95,10 +95,11 @@ p.detail{margin-top:.3rem;font-size:.95rem;max-width:30rem}
 .links{display:flex;flex-direction:column;gap:.2rem}
 .links a{text-decoration:underline;text-decoration-color:var(--border);text-underline-offset:.25em}
 .links a:hover{text-decoration-color:var(--fg)}
-.head{display:grid;grid-template-columns:2.5rem 1fr 1fr;font:.75rem ui-monospace,SFMono-Regular,Menlo,monospace;text-transform:uppercase;letter-spacing:.06em;color:var(--fg-dim);padding:0 0 .6rem;border-bottom:1px solid var(--border)}
+.head{display:grid;grid-template-columns:2.5rem 1fr 1fr 4rem;font:.75rem ui-monospace,SFMono-Regular,Menlo,monospace;text-transform:uppercase;letter-spacing:.06em;color:var(--fg-dim);padding:0 0 .6rem;border-bottom:1px solid var(--border)}
 
 .tracks{list-style:none}
-.tracks li{display:grid;grid-template-columns:2.5rem 1fr 1fr;align-items:baseline;padding:.85rem 0;border-bottom:1px solid var(--border);font-size:1.05rem}
+.head :last-child,.tracks time{text-align:right}
+.tracks li{display:grid;grid-template-columns:2.5rem 1fr 1fr 4rem;align-items:baseline;padding:.85rem 0;border-bottom:1px solid var(--border);font-size:1.05rem}
 .tracks .n,.tracks time{color:var(--fg-dim);font-variant-numeric:tabular-nums;font-size:.95rem}
 .tracks .a{color:var(--fg-mid)}
 .tracks li:hover{background:color-mix(in oklch,var(--fg) 4%,transparent)}
@@ -107,17 +108,18 @@ p.detail{margin-top:.3rem;font-size:.95rem;max-width:30rem}
 .archive a{color:var(--fg-mid)}.archive a:hover{color:var(--fg)}
 /* 2610 hover: the other 2026 codes roll out underneath, drifting and faded */
 .roll{position:relative;display:inline-block;cursor:ns-resize}
-.reel{position:absolute;left:0;top:100%;display:flex;flex-direction:column;pointer-events:none;z-index:2}
+.reel{position:absolute;left:0;top:100%;font-size:.55em;line-height:1.2;display:flex;flex-direction:column;pointer-events:none;z-index:2}
 .reel a{background:var(--bg);padding-right:.3em;color:var(--fg-dim);opacity:0;transform:translateY(-1.1em) skewX(-8deg);filter:blur(3px);
   transition:opacity .25s,transform .35s cubic-bezier(.2,1.4,.4,1),filter .25s,color .1s;transition-delay:calc(var(--i)*35ms)}
 .reel a:nth-child(1){--i:0}.reel a:nth-child(2){--i:1}.reel a:nth-child(3){--i:2}.reel a:nth-child(4){--i:3}.reel a:nth-child(5){--i:4}
 .roll:hover .reel,.roll:focus-within .reel{pointer-events:auto}
-.roll:hover .reel a,.roll:focus-within .reel a{opacity:calc(1 - var(--i)*.17);transform:translateX(calc(var(--i)*.35em));filter:none}
+.roll:hover .reel a,.roll:focus-within .reel a{opacity:max(.3,calc(1 - var(--i)*.12));transform:translateX(calc(var(--i)*.35em));filter:none}
 .reel a:hover{color:var(--fg);opacity:1!important}
 .roll:hover .cur{color:var(--fg-dim)}
 .roll:has(.reel a:hover) .cur{text-decoration:line-through;text-decoration-thickness:2px}
 @media (max-width:640px){.info{grid-template-columns:1fr;gap:1.5rem}
-  .head,.tracks li{grid-template-columns:2rem 1fr}.head .a{display:none}.tracks .a{grid-column:2;font-size:.9rem}}
+  .head,.tracks li{grid-template-columns:2rem 1fr 3.5rem}.head .a{display:none}.tracks .a{grid-column:2;font-size:.9rem}.tracks time{grid-column:3;grid-row:1}}
+.years{flex-direction:row;flex-wrap:wrap;gap:.2rem 1rem}
 .info[hidden],.head[hidden]{display:none}
 </style>
 </head>
@@ -143,11 +145,11 @@ p.detail{margin-top:.3rem;font-size:.95rem;max-width:30rem}
       </div>
       <div id="years-col">
         <h3>Other years</h3>
-        <div class="links" id="years"></div>
+        <div class="links years" id="years"></div>
       </div>
     </div>
 
-    <div class="head" id="head" hidden><span>#</span><span>Track</span><span class="a">Artist</span></div>
+    <div class="head" id="head" hidden><span>#</span><span>Track</span><span class="a">Artist</span><span>Time</span></div>
     <ol class="tracks" id="tracks"></ol>
   </main>
   <script>
@@ -165,7 +167,7 @@ p.detail{margin-top:.3rem;font-size:.95rem;max-width:30rem}
 
     $('cur').textContent = p.title;
     // Hover reel: the other playlists from the same year
-    $('reel').innerHTML = all.filter(x => x.year === p.year && x !== p).slice(0, 8)
+    $('reel').innerHTML = all.filter(x => x.year === p.year && x !== p)
       .map((x, i) => `<a href="${link(x)}" style="--i:${i}">${x.title}</a>`).join('');
 
     $('month').textContent = `${MONTHS[p.month] ?? p.month} ${p.year}`;
@@ -178,7 +180,7 @@ p.detail{margin-top:.3rem;font-size:.95rem;max-width:30rem}
       ? `<span>${y}</span>` : `<a href="${link(all.find(x => x.year === y))}">${y}</a>`).join('');
 
     $('tracks').innerHTML = p.tracks.map(t =>
-      `<li><span class="n">${t.n}</span><span>${esc(t.title)}</span><span class="a">${esc(t.artist)}</span></li>`).join('');
+      `<li><span class="n">${t.n}</span><span>${esc(t.title)}</span><span class="a">${esc(t.artist)}</span><time>${t.time ?? ''}</time></li>`).join('');
     $('info').hidden = $('head').hidden = false;
   });
   </script>
