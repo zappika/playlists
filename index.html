@@ -120,6 +120,34 @@ p.detail{margin-top:.3rem;font-size:.95rem;max-width:30rem}
 @media (max-width:640px){.info{grid-template-columns:1fr;gap:1.5rem}
   .head,.tracks li{grid-template-columns:2rem 1fr 3.5rem}.head .a{display:none}.tracks .a{grid-column:2;font-size:.9rem}.tracks time{grid-column:3;grid-row:1}}
 .years{flex-direction:row;flex-wrap:wrap;gap:.2rem 1rem}
+/* Landing: latest on top, the whole archive as a year x month grid below */
+.latest{min-height:calc(100svh - 7rem);display:grid;grid-template-columns:repeat(8,1fr);gap:2rem;align-content:end;padding-bottom:4rem}
+.latest .lead{grid-column:1/5;display:flex;flex-direction:column;gap:1rem;align-self:end}
+.latest .kick{font:.8rem ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--fg-dim);text-transform:uppercase;letter-spacing:.04em}
+.latest .big{font-size:clamp(6rem,17vw,15rem);font-weight:900;line-height:.8;letter-spacing:-.06em;margin-left:-.05em}
+.latest .big:hover{color:var(--fg-mid)}
+.latest .acts{display:flex;gap:1.4rem;font-size:1.05rem}
+.latest .acts a{text-decoration:underline;text-decoration-color:var(--border);text-underline-offset:.25em}
+.latest .acts a:hover{text-decoration-color:var(--fg)}
+.mini{grid-column:5/9;list-style:none;align-self:end;font-size:.95rem;border-top:1px solid var(--border)}
+.mini li{display:grid;grid-template-columns:2rem 1fr auto;gap:.6rem;padding:.4rem 0;border-bottom:1px solid var(--border)}
+.mini .n,.mini time{color:var(--fg-dim);font-variant-numeric:tabular-nums}
+.mini .a{color:var(--fg-mid)}
+.arch{border-top:1px solid var(--border);padding-top:1.25rem;display:flex;justify-content:space-between}
+.cal{display:grid;grid-template-columns:3.5rem repeat(12,1fr);gap:1px;background:var(--border);border:1px solid var(--border);margin-top:2.5rem}
+.cal>*{background:var(--bg);min-width:0}
+.cal .mh,.cal .yr{font:.7rem ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--fg-dim);padding:.4rem .5rem;text-transform:uppercase}
+.cal .yr{font-size:.8rem;color:var(--fg)}
+.cell{display:flex;flex-direction:column;gap:.35rem;padding:.55rem .55rem .7rem;min-height:8.5rem;overflow:hidden;transition:background .1s,color .1s}
+.cell b{font-size:1.25rem;font-weight:700;letter-spacing:-.03em;line-height:1}
+.cell small{font:.65rem ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--fg-dim)}
+.cell span{font-size:.72rem;line-height:1.25;color:var(--fg-mid);display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+a.cell:hover{background:var(--fg);color:var(--bg)}
+a.cell:hover small,a.cell:hover span{color:var(--bg)}
+.cell.none{background:repeating-linear-gradient(-45deg,var(--bg) 0 6px,color-mix(in oklch,var(--fg) 5%,var(--bg)) 6px 7px)}
+@media (max-width:900px){.latest .lead,.mini{grid-column:1/9}
+  .cal{grid-template-columns:repeat(auto-fill,minmax(7.5rem,1fr))}.cal .mh,.cal .none{display:none}.cal .yr{grid-column:1/-1;padding-top:1rem}}
+[hidden]{display:none!important}
 .info[hidden],.head[hidden]{display:none}
 </style>
 </head>
@@ -127,7 +155,21 @@ p.detail{margin-top:.3rem;font-size:.95rem;max-width:30rem}
   <header class="bar">
     <a class="name" href="/">Sarper Erel</a>
   </header>
-  <main class="page">
+  <main class="page" id="home" hidden>
+    <div class="latest">
+      <div class="lead">
+        <h2 class="crumb">Playlists</h2>
+        <span class="kick" id="l-kick"></span>
+        <a class="big" id="l-big"></a>
+        <div class="acts" id="l-acts"></div>
+      </div>
+      <ol class="mini" id="l-tracks"></ol>
+    </div>
+    <div class="arch"><span class="label">(Archive)</span><span class="num" id="l-total"></span></div>
+    <div class="cal" id="cal"></div>
+  </main>
+
+  <main class="page" id="detail" hidden>
     <h2 class="crumb"><a href="./">Playlists</a><span class="sep">/</span><span class="roll" tabindex="0" aria-label="Other playlists">
       <span class="cur" id="cur"></span>
       <span class="reel" id="reel"></span>
@@ -162,7 +204,9 @@ p.detail{margin-top:.3rem;font-size:.95rem;max-width:30rem}
   fetch('./playlists.json').then(r => r.json()).then(all => {
     all.sort((a, b) => b.title.localeCompare(a.title));
     const want = location.pathname.match(/(\d{4})\/?$/)?.[1];
-    const p = all.find(x => x.title === want) || all[0];
+    const p = all.find(x => x.title === want);
+    if (!p) return home(all);
+    $('detail').hidden = false;
     document.title = `${p.title} - Sarper Erel`;
 
     $('cur').textContent = p.title;
@@ -183,6 +227,33 @@ p.detail{margin-top:.3rem;font-size:.95rem;max-width:30rem}
       `<li><span class="n">${t.n}</span><span>${esc(t.title)}</span><span class="a">${esc(t.artist)}</span><time>${t.time ?? ''}</time></li>`).join('');
     $('info').hidden = $('head').hidden = false;
   });
+
+  const listen = p => [['Apple Music', p.appleUrl], ['Spotify', p.spotifyUrl]]
+    .filter(([, u]) => u).map(([n, u]) => `<a href="${esc(u)}" target="_blank" rel="noopener noreferrer">${n} ↗</a>`).join('');
+
+  // Landing: the latest playlist up top, every month since the first below
+  function home(all) {
+    const p = all[0];
+    $('l-kick').textContent = `Latest · ${MONTHS[p.month]} ${p.year} · ${p.tracks.length} tracks`;
+    $('l-big').textContent = p.title;
+    $('l-big').href = link(p);
+    $('l-acts').innerHTML = `<a href="${link(p)}">Open ${p.title} →</a>` + listen(p);
+    $('l-tracks').innerHTML = p.tracks.map(t =>
+      `<li><span class="n">${t.n}</span><span>${esc(t.title)} <span class="a">/ ${esc(t.artist)}</span></span><time>${t.time ?? ''}</time></li>`).join('');
+    $('l-total').textContent = `${all.length} playlists`;
+
+    const by = Object.fromEntries(all.map(x => [x.title, x]));
+    const keys = Object.keys(MONTHS);
+    const years = [...new Set(all.map(x => x.year))];
+    $('cal').innerHTML = '<span class="mh"></span>' + keys.map(m => `<span class="mh">${m}</span>`).join('') +
+      years.map(y => `<span class="yr">${y}</span>` + keys.map((m, i) => {
+        const x = by[y.slice(2) + String(i + 1).padStart(2, '0')];
+        if (!x) return '<span class="cell none"></span>';
+        return `<a class="cell" href="${link(x)}"><b>${x.title}</b><small>${x.tracks.length} tracks</small>` +
+          `<span>${[...new Set(x.tracks.map(t => t.artist))].map(esc).join(', ')}</span></a>`;
+      }).join('')).join('');
+    $('home').hidden = false;
+  }
   </script>
 </body>
 </html>
