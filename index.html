@@ -158,8 +158,6 @@ a.cell:hover small,a.cell:hover span{color:var(--bg)}
   <main class="page" id="home" hidden>
     <div class="latest">
       <div class="lead">
-        <h2 class="crumb">Playlists</h2>
-        <span class="kick" id="l-kick"></span>
         <a class="big" id="l-big"></a>
         <div class="acts" id="l-acts"></div>
       </div>
@@ -234,10 +232,9 @@ a.cell:hover small,a.cell:hover span{color:var(--bg)}
   // Landing: the latest playlist up top, every month since the first below
   function home(all) {
     const p = all[0];
-    $('l-kick').textContent = `Latest · ${MONTHS[p.month]} ${p.year} · ${p.tracks.length} tracks`;
     $('l-big').textContent = p.title;
     $('l-big').href = link(p);
-    $('l-acts').innerHTML = `<a href="${link(p)}">Open ${p.title} →</a>` + listen(p);
+    $('l-acts').innerHTML = listen(p);
     $('l-tracks').innerHTML = p.tracks.map(t =>
       `<li><span class="n">${t.n}</span><span>${esc(t.title)} <span class="a">/ ${esc(t.artist)}</span></span><time>${t.time ?? ''}</time></li>`).join('');
     $('l-total').textContent = `${all.length} playlists`;
