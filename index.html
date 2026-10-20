@@ -3,375 +3,185 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>playlists</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
+  <title>Playlists - Sarper Erel</title>
+  <meta name="description" content="Monthly playlists by Sarper Erel." />
+  <link rel="icon" href="/profile.png" />
+  <link rel="preconnect" href="https://api.fontshare.com" crossorigin />
+  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet" />
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:oklch(0.17 0.004 90);      /* near-black, hair warm */
+  --fg:oklch(0.95 0.004 90);      /* off-white  ~16:1 */
+  --fg-mid:oklch(0.74 0.004 90);  /* secondary  ~8:1 */
+  --fg-dim:oklch(0.64 0.004 90);  /* labels     ~5.6:1 */
+  --border:oklch(0.28 0.004 90);
+  --accent:var(--fg);             /* neutral: emphasis = full-strength text */
+  --f:'Satoshi',system-ui,sans-serif;
+  color-scheme:dark light;
+}
+@media (prefers-color-scheme:light){:root{
+  --bg:oklch(0.993 0.001 250);  /* barely-off white */
+  --fg:oklch(0.2 0 0);
+  --fg-mid:oklch(0.42 0 0);
+  --fg-dim:oklch(0.52 0 0);
+  --border:oklch(0.9 0 0);
+}}
+html{font-size:87.5%;background:var(--bg);color:var(--fg)}  /* 14px root: every rem scales with it */
+body{font-family:var(--f);line-height:1.55;min-height:100vh;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+a:hover{color:var(--accent)}
+.arrow{font-size:.85em}
+.detail{color:var(--fg-mid)}
+:root{--gut:clamp(1.25rem,8.333vw,10rem)}  /* one column of a 12-col grid in from each edge */
 
-    :root {
-      --bg: #f5f5f0;
-      --fg: #0a0a0a;
-      --fg-dim: rgba(10,10,10,0.35);
-      --fg-mid: rgba(10,10,10,0.6);
-      --border: rgba(10,10,10,0.1);
-      --mono: 'IBM Plex Mono', monospace;
-      --display: 'Syne', sans-serif;
-    }
+/* Top bar: name on the left, Barcelona now on the right */
+.bar{position:fixed;inset:0 0 auto;z-index:1;display:flex;justify-content:space-between;align-items:baseline;gap:1rem;
+  padding:1.25rem var(--gut) 1.5rem;background:linear-gradient(var(--bg) 60%,transparent)}
+.now{display:flex;gap:.9rem;min-width:0;color:var(--fg-dim)}
+#now-time{font-variant-numeric:tabular-nums;color:var(--fg)}
+#now-song-row{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#now-song{color:var(--fg)}
+/* Weather card on BCN hover: 3x2 grid, under 120px tall */
+#now-bcn{position:relative;cursor:default;white-space:nowrap}
+#wx{position:absolute;top:calc(100% + .9rem);right:0;display:grid;grid-template-columns:repeat(3,5.6rem);
+  gap:1px;background:var(--border);border:1px solid var(--border);
+  opacity:0;transform:translateY(-4px);transition:opacity .15s,transform .15s;pointer-events:none}
+#wx>span{background:var(--bg);padding:.5rem .6rem .55rem;display:flex;flex-direction:column;gap:.15rem}
+#wx i{font:normal .62rem/1 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--fg-dim);text-transform:lowercase}
+#wx b{font-weight:500;font-size:.85rem;line-height:1.2;color:var(--fg);font-variant-numeric:tabular-nums}
+#now-bcn:hover #wx,#now-bcn:focus #wx{opacity:1;transform:none}
+#now-art{position:absolute;top:calc(100% - .5rem);right:var(--gut);width:120px;height:120px;object-fit:cover;
+  opacity:0;transform:translateY(-4px);transition:opacity .15s,transform .15s;pointer-events:none}
+#now-song-row:hover #now-art{opacity:1;transform:none}
+.name{font-size:1rem;font-weight:700;white-space:nowrap}
+/* Name hover: email pill next to it, click to copy */
+.who{position:relative;display:flex;align-items:center}
+.mail{position:absolute;left:calc(100% + .75rem);top:50%;translate:0 -50%;display:flex;align-items:baseline;gap:.5rem;white-space:nowrap;
+  font:500 1rem var(--f);color:var(--fg);background:var(--bg);border:1px solid var(--border);border-radius:99rem;padding:.3rem .9rem;cursor:pointer;
+  opacity:0;transform:translateX(-4px);transition:opacity .15s,transform .15s;pointer-events:none}
+.mail::before{content:'';position:absolute;inset:-1px 100% -1px -1rem}  /* hover bridge across the gap */
+.mail small{font-size:.75rem;font-weight:400;color:var(--fg-dim)}
+.who:hover .mail,.who:focus-within .mail{opacity:1;transform:none;pointer-events:auto}
 
-    html { background: var(--bg); color: var(--fg); }
+/* Above the fold: about text, big, in the left half */
+.about{min-height:100svh;display:flex;flex-direction:column;justify-content:flex-end;gap:.6em;padding:6rem var(--gut) 12svh}
+.about p{max-width:38rem;font-size:clamp(1.45rem,2.9vw,2.2rem);font-weight:500;line-height:1.15;letter-spacing:-.025em}
 
-    body {
-      font-family: var(--mono);
-      background: var(--bg);
-      color: var(--fg);
-      min-height: 100vh;
-      padding: 0;
-      -webkit-font-smoothing: antialiased;
-    }
+/* Numbered sections with a hairline on top */
+section{margin:0 var(--gut);padding:1.25rem 0 6rem;border-top:1px solid var(--border);
+  display:grid;grid-template-columns:repeat(8,1fr);row-gap:3rem}
+.label,.num{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.8rem;font-weight:400;color:var(--fg-dim)}
+.label{grid-column:1/5}.num{grid-column:5/9;justify-self:end}
+.list{grid-column:2/9;list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:1.6rem 2rem;font-size:1.15rem}
+.period{display:block;font-size:.8rem;color:var(--fg-dim);font-variant-numeric:tabular-nums;margin-bottom:.15rem}
+.list a{text-decoration:underline;text-decoration-color:var(--border);text-underline-offset:.25em}
+.list a:hover{text-decoration-color:var(--accent)}
+p.detail{margin-top:.3rem;font-size:.95rem;max-width:30rem}
+@media (max-width:640px){
+  .list{grid-column:1/9;grid-template-columns:1fr}
+  #now-song-label{display:none}
+}
 
-    /* ── HEADER ── */
-    header {
-      padding: 3rem 3rem 2.5rem;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: baseline;
-      justify-content: space-between;
-      gap: 2rem;
-    }
+/* Playlist prototype: between Record Club and Are.na */
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+.page{padding:7rem var(--gut) 6rem}
+.crumb{font-size:clamp(1.6rem,3vw,2.4rem);font-weight:700;letter-spacing:-.025em;line-height:1.1}
+.crumb a{color:var(--fg-dim)}.crumb a:hover{color:var(--fg)}
+.crumb .sep{color:var(--border);margin:0 .4em;font-weight:400}
+.info{display:grid;grid-template-columns:repeat(3,1fr);gap:2rem;margin:3rem 0 4.5rem;font-size:.95rem}
+.info h3{font-size:.85rem;font-weight:400;color:var(--fg-dim);padding-bottom:.4rem;border-bottom:1px solid var(--border);margin-bottom:.7rem}
+.kv{display:flex;justify-content:space-between;padding:.2rem 0}.kv span:first-child{color:var(--fg-mid)}
+.links{display:flex;flex-direction:column;gap:.2rem}
+.links a{text-decoration:underline;text-decoration-color:var(--border);text-underline-offset:.25em}
+.links a:hover{text-decoration-color:var(--fg)}
+.head{display:grid;grid-template-columns:2.5rem 1fr 1fr;font:.75rem ui-monospace,SFMono-Regular,Menlo,monospace;text-transform:uppercase;letter-spacing:.06em;color:var(--fg-dim);padding:0 0 .6rem;border-bottom:1px solid var(--border)}
 
-    .site-title {
-      font-family: var(--display);
-      font-size: clamp(1.6rem, 4vw, 2.4rem);
-      font-weight: 800;
-      letter-spacing: -0.02em;
-      line-height: 1;
-    }
-
-    .site-meta {
-      font-size: 0.65rem;
-      color: var(--fg-dim);
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      text-align: right;
-      line-height: 1.8;
-    }
-
-    /* ── GRID ── */
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      border-left: 1px solid var(--border);
-    }
-
-    @media (max-width: 600px) {
-      header { padding: 2rem 1.5rem; flex-direction: column; gap: 1rem; }
-      .site-meta { text-align: left; }
-      .grid { grid-template-columns: 1fr; border-left: none; }
-    }
-
-    /* ── PLAYLIST CARD ── */
-    .playlist {
-      border-right: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-      cursor: pointer;
-      transition: background 0.15s ease;
-      --card-bg: var(--bg);
-      --card-fg: var(--fg);
-      background: var(--card-bg);
-      color: var(--card-fg);
-    }
-
-    .playlist:hover .cover-wrap { opacity: 0.88; }
-
-    .card-top {
-      padding: 0;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .cover-wrap {
-      width: 100%;
-      aspect-ratio: 1 / 1;
-      background: #e8e8e3;
-      overflow: hidden;
-      transition: opacity 0.2s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .cover-wrap img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
-
-    .cover-placeholder {
-      width: 100%;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: var(--display);
-      font-size: clamp(3rem, 10vw, 6rem);
-      font-weight: 800;
-      color: rgba(10,10,10,0.06);
-      letter-spacing: -0.04em;
-      user-select: none;
-    }
-
-    .card-bottom {
-      padding: 1.25rem 1.5rem 1rem;
-      border-top: 1px solid rgba(10,10,10,0.07);
-    }
-
-    .card-date {
-      font-size: 0.6rem;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      opacity: 0.45;
-      margin-bottom: 0.3rem;
-    }
-
-    .card-title {
-      font-family: var(--display);
-      font-size: clamp(1.4rem, 3.5vw, 2rem);
-      font-weight: 700;
-      letter-spacing: -0.02em;
-      line-height: 1;
-      margin-bottom: 1rem;
-    }
-
-    .card-links {
-      display: flex;
-      gap: 1.5rem;
-      align-items: center;
-    }
-
-    .card-link {
-      font-size: 0.6rem;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      text-decoration: none;
-      color: inherit;
-      opacity: 0.5;
-      transition: opacity 0.15s ease;
-      display: flex;
-      align-items: center;
-      gap: 0.3em;
-    }
-
-    .card-link:hover { opacity: 1; }
-    .card-link .arrow { font-size: 0.75rem; }
-
-    .card-expand-hint {
-      font-size: 0.55rem;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      opacity: 0.25;
-      margin-left: auto;
-      transition: opacity 0.15s;
-    }
-
-    .playlist:hover .card-expand-hint { opacity: 0.5; }
-    .playlist.open .card-expand-hint { opacity: 0.7; }
-
-    /* ── TRACKLIST ── */
-    .tracklist {
-      display: none;
-      padding: 0 1.5rem 1.5rem;
-      border-top: 1px solid rgba(10,10,10,0.06);
-      margin-top: 0.25rem;
-    }
-
-    .playlist.open .tracklist { display: block; }
-
-    .tracklist-inner {
-      padding-top: 1rem;
-    }
-
-    .track {
-      display: grid;
-      grid-template-columns: 2rem 1fr auto;
-      gap: 0 0.75rem;
-      align-items: baseline;
-      padding: 0.45rem 0;
-      border-bottom: 1px solid rgba(10,10,10,0.05);
-      font-size: 0.7rem;
-    }
-
-    .track:last-child { border-bottom: none; }
-
-    .track-n {
-      opacity: 0.25;
-      font-size: 0.6rem;
-      text-align: right;
-      letter-spacing: 0.05em;
-    }
-
-    .track-title {
-      font-weight: 500;
-      letter-spacing: 0.01em;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .track-artist {
-      opacity: 0.45;
-      font-size: 0.62rem;
-      letter-spacing: 0.03em;
-      white-space: nowrap;
-      font-style: italic;
-    }
-
-    /* ── FOOTER ── */
-    footer {
-      border-top: 1px solid var(--border);
-      padding: 1.5rem 3rem;
-      font-size: 0.6rem;
-      letter-spacing: 0.1em;
-      color: var(--fg-dim);
-      text-transform: uppercase;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    @media (max-width: 600px) {
-      footer { padding: 1.5rem; flex-direction: column; gap: 0.5rem; align-items: flex-start; }
-      .card-bottom { padding: 1rem; }
-      .tracklist { padding: 0 1rem 1rem; }
-    }
-
-    /* ── LOAD ANIMATION ── */
-    .playlist {
-      animation: fadeUp 0.4s ease both;
-    }
-    .playlist:nth-child(1) { animation-delay: 0.04s; }
-    .playlist:nth-child(2) { animation-delay: 0.08s; }
-    .playlist:nth-child(3) { animation-delay: 0.12s; }
-    .playlist:nth-child(4) { animation-delay: 0.16s; }
-    .playlist:nth-child(5) { animation-delay: 0.2s; }
-    .playlist:nth-child(6) { animation-delay: 0.24s; }
-
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(12px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-  </style>
+.tracks{list-style:none}
+.tracks li{display:grid;grid-template-columns:2.5rem 1fr 1fr;align-items:baseline;padding:.85rem 0;border-bottom:1px solid var(--border);font-size:1.05rem}
+.tracks .n,.tracks time{color:var(--fg-dim);font-variant-numeric:tabular-nums;font-size:.95rem}
+.tracks .a{color:var(--fg-mid)}
+.tracks li:hover{background:color-mix(in oklch,var(--fg) 4%,transparent)}
+.archive{margin-top:4.5rem}
+.archive ul{list-style:none;display:flex;gap:1.6rem;font-size:1.15rem}
+.archive a{color:var(--fg-mid)}.archive a:hover{color:var(--fg)}
+/* 2610 hover: the other 2026 codes roll out underneath, drifting and faded */
+.roll{position:relative;display:inline-block;cursor:ns-resize}
+.reel{position:absolute;left:0;top:100%;display:flex;flex-direction:column;pointer-events:none;z-index:2}
+.reel a{background:var(--bg);padding-right:.3em;color:var(--fg-dim);opacity:0;transform:translateY(-1.1em) skewX(-8deg);filter:blur(3px);
+  transition:opacity .25s,transform .35s cubic-bezier(.2,1.4,.4,1),filter .25s,color .1s;transition-delay:calc(var(--i)*35ms)}
+.reel a:nth-child(1){--i:0}.reel a:nth-child(2){--i:1}.reel a:nth-child(3){--i:2}.reel a:nth-child(4){--i:3}.reel a:nth-child(5){--i:4}
+.roll:hover .reel,.roll:focus-within .reel{pointer-events:auto}
+.roll:hover .reel a,.roll:focus-within .reel a{opacity:calc(1 - var(--i)*.17);transform:translateX(calc(var(--i)*.35em));filter:none}
+.reel a:hover{color:var(--fg);opacity:1!important}
+.roll:hover .cur{color:var(--fg-dim)}
+.roll:has(.reel a:hover) .cur{text-decoration:line-through;text-decoration-thickness:2px}
+@media (max-width:640px){.info{grid-template-columns:1fr;gap:1.5rem}
+  .head,.tracks li{grid-template-columns:2rem 1fr}.head .a{display:none}.tracks .a{grid-column:2;font-size:.9rem}}
+.info[hidden],.head[hidden]{display:none}
+</style>
 </head>
 <body>
+  <header class="bar">
+    <a class="name" href="/">Sarper Erel</a>
+  </header>
+  <main class="page">
+    <h2 class="crumb"><a href="./">Playlists</a><span class="sep">/</span><span class="roll" tabindex="0" aria-label="Other playlists">
+      <span class="cur" id="cur"></span>
+      <span class="reel" id="reel"></span>
+    </span></h2>
 
-<header>
-  <div class="site-title">playlists.</div>
-  <div class="site-meta">
-    monthly selections<br/>
-    apple music &amp; spotify
-  </div>
-</header>
+    <div class="info" id="info" hidden>
+      <div>
+        <h3>Info</h3>
+        <div class="kv"><span>Month</span><span id="month"></span></div>
+        <div class="kv"><span>Tracks</span><span id="count"></span></div>
+      </div>
+      <div>
+        <h3>Listen</h3>
+        <div class="links" id="listen"></div>
+      </div>
+      <div id="years-col">
+        <h3>Other years</h3>
+        <div class="links" id="years"></div>
+      </div>
+    </div>
 
-<main class="grid" id="grid"></main>
+    <div class="head" id="head" hidden><span>#</span><span>Track</span><span class="a">Artist</span></div>
+    <ol class="tracks" id="tracks"></ol>
+  </main>
+  <script>
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+  const MONTHS = { JAN: 'January', FEB: 'February', MAR: 'March', APR: 'April', MAY: 'May', JUN: 'June', JUL: 'July', AUG: 'August', SEP: 'September', OCT: 'October', NOV: 'November', DEC: 'December' };
+  const link = p => `./${p.title}`;
 
-<footer>
-  <span id="footer-count">— playlists</span>
-  <span>updated monthly</span>
-</footer>
+  // One playlist per page: /playlists/2604, newest at /playlists/
+  fetch('./playlists.json').then(r => r.json()).then(all => {
+    all.sort((a, b) => b.title.localeCompare(a.title));
+    const want = location.pathname.match(/(\d{4})\/?$/)?.[1];
+    const p = all.find(x => x.title === want) || all[0];
+    document.title = `${p.title} - Sarper Erel`;
 
-<script>
-  function rootAsset(path) {
-    if (!path) return '';
-    if (/^https?:\/\//i.test(path)) return path;
-    return path.replace(/^\//, '');
-  }
+    $('cur').textContent = p.title;
+    // Hover reel: the other playlists from the same year
+    $('reel').innerHTML = all.filter(x => x.year === p.year && x !== p).slice(0, 8)
+      .map((x, i) => `<a href="${link(x)}" style="--i:${i}">${x.title}</a>`).join('');
 
-  async function init() {
-    const res = await fetch('./playlists.json');
-    const playlists = await res.json();
+    $('month').textContent = `${MONTHS[p.month] ?? p.month} ${p.year}`;
+    $('count').textContent = p.tracks.length;
+    $('listen').innerHTML = [['Apple Music', p.appleUrl], ['Spotify', p.spotifyUrl]]
+      .filter(([, u]) => u).map(([n, u]) => `<a href="${esc(u)}" target="_blank" rel="noopener noreferrer">${n} ↗</a>`).join('') || '<span>Soon</span>';
 
-    document.getElementById('footer-count').textContent = playlists.length + ' playlists';
+    // Other years: newest playlist of each other year
+    const years = [...new Set(all.map(x => x.year))].filter(y => y !== p.year);
+    if (years.length) $('years').innerHTML = years.map(y => `<a href="${link(all.find(x => x.year === y))}">${y}</a>`).join('');
+    else $('years-col').style.visibility = 'hidden';
 
-    const grid = document.getElementById('grid');
-
-    playlists.forEach(p => {
-      const hasCover = p.cover;
-      const hasColor = p.bg && p.fg;
-      const coverSrc = rootAsset(p.cover);
-
-      const el = document.createElement('article');
-      el.className = 'playlist';
-      el.dataset.id = p.id;
-
-      if (hasColor) {
-        el.style.setProperty('--card-bg', p.bg);
-        el.style.setProperty('--card-fg', p.fg);
-        el.style.background = p.bg;
-        el.style.color = p.fg;
-      }
-
-      const trackRows = p.tracks.map(t => `
-        <div class="track">
-          <span class="track-n">${String(t.n).padStart(2, '0')}</span>
-          <span class="track-title">${t.title}</span>
-          <span class="track-artist">${t.artist}</span>
-        </div>
-      `).join('');
-
-      const borderColor = hasColor
-        ? `rgba(${hexToRgb(p.fg)}, 0.12)`
-        : 'rgba(240,240,240,0.06)';
-
-      el.innerHTML = `
-        <div class="card-top">
-          <div class="cover-wrap">
-            ${hasCover
-              ? `<img src="${coverSrc}" alt="${p.title}" onerror="this.parentElement.innerHTML='<div class=\'cover-placeholder\'>${p.month}</div>'" />`
-              : `<div class="cover-placeholder">${p.month}</div>`
-            }
-          </div>
-        </div>
-        <div class="card-bottom">
-          <div class="card-date">${p.month} ${p.year}</div>
-          <div class="card-title">${p.title}</div>
-          <div class="card-links">
-            <a class="card-link" href="${p.appleUrl}" target="_blank" rel="noopener" onclick="event.stopPropagation()">
-              Apple Music <span class="arrow">↗</span>
-            </a>
-            <a class="card-link" href="${p.spotifyUrl}" target="_blank" rel="noopener" onclick="event.stopPropagation()">
-              Spotify <span class="arrow">↗</span>
-            </a>
-            <span class="card-expand-hint">tracklist ↓</span>
-          </div>
-        </div>
-        <div class="tracklist" style="border-top-color: ${borderColor}">
-          <div class="tracklist-inner">
-            ${trackRows}
-          </div>
-        </div>
-      `;
-
-      el.addEventListener('click', () => {
-        const isOpen = el.classList.contains('open');
-        // close all others
-        document.querySelectorAll('.playlist.open').forEach(x => x.classList.remove('open'));
-        if (!isOpen) el.classList.add('open');
-      });
-
-      grid.appendChild(el);
-    });
-  }
-
-  function hexToRgb(hex) {
-    const r = parseInt(hex.slice(1,3),16);
-    const g = parseInt(hex.slice(3,5),16);
-    const b = parseInt(hex.slice(5,7),16);
-    return `${r},${g},${b}`;
-  }
-
-  init();
-</script>
+    $('tracks').innerHTML = p.tracks.map(t =>
+      `<li><span class="n">${t.n}</span><span>${esc(t.title)}</span><span class="a">${esc(t.artist)}</span></li>`).join('');
+    $('info').hidden = $('head').hidden = false;
+  });
+  </script>
 </body>
 </html>

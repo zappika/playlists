@@ -1,0 +1,3 @@
+{
+  "rewrites": [{ "source": "/+([0-9])", "destination": "/index.html" }]
+}
