@@ -173,10 +173,9 @@ p.detail{margin-top:.3rem;font-size:.95rem;max-width:30rem}
     $('listen').innerHTML = [['Apple Music', p.appleUrl], ['Spotify', p.spotifyUrl]]
       .filter(([, u]) => u).map(([n, u]) => `<a href="${esc(u)}" target="_blank" rel="noopener noreferrer">${n} ↗</a>`).join('') || '<span>Soon</span>';
 
-    // Other years: newest playlist of each other year
-    const years = [...new Set(all.map(x => x.year))].filter(y => y !== p.year);
-    if (years.length) $('years').innerHTML = years.map(y => `<a href="${link(all.find(x => x.year === y))}">${y}</a>`).join('');
-    else $('years-col').style.visibility = 'hidden';
+    // Other years: every year, newest playlist of each; the current one unlinked
+    $('years').innerHTML = [...new Set(all.map(x => x.year))].map(y => y === p.year
+      ? `<span>${y}</span>` : `<a href="${link(all.find(x => x.year === y))}">${y}</a>`).join('');
 
     $('tracks').innerHTML = p.tracks.map(t =>
       `<li><span class="n">${t.n}</span><span>${esc(t.title)}</span><span class="a">${esc(t.artist)}</span></li>`).join('');
